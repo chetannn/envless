@@ -51,6 +51,7 @@
     "topics": {},
     "update": {
       "s3": {
+        "xz": true,
         "bucket": "testingcli.envless.dev"
       }
     }
