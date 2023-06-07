@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { Octokit } from "@octokit/rest";
 import crypto from "crypto";
 import execa from "execa";
 import fs from "fs";
@@ -25,9 +26,9 @@ const M1_ARCH = "arm64";
 
 const { GITHUB_SHA_SHORT } = process.env;
 
-const git = async (args, opts = {}) => {
-  await execa("git", ["-C", homebrewDir, ...args], opts);
-};
+// const git = async (args, opts = {}) => {
+//   await execa("git", ["-C", homebrewDir, ...args], opts);
+// };
 
 async function cloneHomebrewTapRepo() {
   console.log(
@@ -51,15 +52,31 @@ async function getEnvlessFormulaTemplate() {
 }
 
 async function updateEnvlessFormula(template) {
-  console.log("updating local git repository...");
+  console.log("updating remote repository...");
 
-  fs.writeFileSync(formulaPath, template);
+  const octokit = new Octokit({
+    auth: process.env.GITHUB_TOKEN,
+  });
 
-  await git(["add", "Formula"]);
-  // await git(["config", "--local", "core.pager", "cat"]);
-  await git(["diff", "--cached"], { stdio: "inherit" });
-  await git(["commit", "-m", `envless v${VERSION}`]);
-  await git(["push", "origin", "master"]);
+  const {
+    data: { sha },
+  } = await octokit.repos.getContent({
+    owner: "chetannn",
+    repo: "envless-homebrew",
+    path: formulaPath,
+  });
+
+  await octokit.repos.createOrUpdateFileContents({
+    owner: "chetannn",
+    repo: "envless-homebrew",
+    path: formulaPath,
+    message: "Update formula",
+    content: Buffer.from(template).toString("base64"),
+    sha: sha,
+    branch: "main",
+  });
+
+  console.log("formula updated successfully...");
 }
 
 async function calculateSHA256(filePath) {

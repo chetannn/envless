@@ -29,6 +29,9 @@ jobs:
           cp yarn.lock apps/cli
           cd apps/cli
           yarn --frozen-lockfile --network-timeout 1000000
+      - name: Install @octokit/rest
+      - run: yarn add @octokit/rest
+      - name: Shorten Commit SHA
       - run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
       - name: release homebrew
         run: |
