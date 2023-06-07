@@ -12,8 +12,6 @@ const packageJson = JSON.parse(
 
 const VERSION = packageJson.version;
 
-console.log(VERSION);
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
