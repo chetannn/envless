@@ -1,8 +1,18 @@
 #!/usr/bin/env node
 import execa from "execa";
 import fs from "fs";
+import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
+const packageJsonPath = "../../apps/cli/package.json";
+const packageJson = JSON.parse(
+  readFileSync(new URL(packageJsonPath, import.meta.url)),
+);
+
+const VERSION = packageJson.version;
+
+console.log(VERSION);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,15 +23,6 @@ const formulaPath = path.join(homebrewDir, "Formula", "envless.rb");
 const fileSuffix = ".tar.xz";
 const INTEL_ARCH = "x64";
 const M1_ARCH = "arm64";
-
-const VERSION = require(path.join(
-  __dirname,
-  "..",
-  "..",
-  "apps",
-  "cli",
-  "package.json",
-)).version;
 
 const { GITHUB_SHA_SHORT } = process.env;
 
