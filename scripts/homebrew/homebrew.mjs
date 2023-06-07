@@ -54,10 +54,8 @@ async function getEnvlessFormulaTemplate() {
 async function updateEnvlessFormula(template) {
   console.log("updating remote repository...");
 
-  console.log("token", process.env.GITHUB_TOKEN);
-
   const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
+    auth: process.env.TAP_GITHUB_TOKEN,
   });
 
   const {
