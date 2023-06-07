@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const tmp = path.join(__dirname, "tmp");
-const homebrewDir = path.join(tmp, "homebrew-tap");
+const homebrewDir = path.join(tmp, "envless-homebrew");
 const formulaPath = path.join(homebrewDir, "Formula", "envless.rb");
 const fileSuffix = ".tar.xz";
 const INTEL_ARCH = "x64";
@@ -30,12 +30,12 @@ const git = async (args, opts = {}) => {
 
 async function cloneHomebrewTapRepo() {
   console.log(
-    `cloning https://github.com/envless/homebrew-tap to ${homebrewDir}`,
+    `cloning https://github.com/chetannn/homebrew-tap to ${homebrewDir}`,
   );
 
   await execa("git", [
     "clone",
-    "https://github.com/envless/homebrew-tap.git",
+    "https://github.com/chetannn/envless-homebrew.git",
     homebrewDir,
   ]);
   console.log(`done cloning envless/homebrew-tap to ${homebrewDir}`);
