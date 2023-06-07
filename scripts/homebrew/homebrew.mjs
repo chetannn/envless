@@ -110,8 +110,10 @@ function getS3PublicUrl(versionedFilePath) {
 }
 
 function getS3Prefixes() {
-  const fileNamePrefix = `envless-v${VERSION}-${GITHUB_SHA_SHORT}-darwin-`;
-  const s3KeyPrefix = `versions/${VERSION}/${GITHUB_SHA_SHORT}`;
+  // const fileNamePrefix = `envless-v${VERSION}-${GITHUB_SHA_SHORT}-darwin-`;
+  const fileNamePrefix = `envless-v${VERSION}-ad15691-darwin-`;
+  // const s3KeyPrefix = `versions/${VERSION}/${GITHUB_SHA_SHORT}`;
+  const s3KeyPrefix = `versions/0.0.4/ad15691`;
 
   return { fileNamePrefix, s3KeyPrefix };
 }
@@ -121,7 +123,9 @@ function getVersionedFilePathInS3() {
   const fileParts = [fileNamePrefix, fileSuffix];
 
   const fileNameM1 = fileParts.join(M1_ARCH);
-  return `${s3KeyPrefix}/${fileNameM1}`;
+
+  return `versions/0.0.4/ad15691/${fileNameM1}`;
+  // return `${s3KeyPrefix}/${fileNameM1}`;
 }
 
 function getDownloadPath() {
