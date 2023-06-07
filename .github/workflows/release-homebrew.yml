@@ -15,9 +15,6 @@ jobs:
     environment: ReleaseHomebrew
     steps:
       - uses: actions/checkout@v3
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Install AWS cli
         run: |
           sudo apt-get update
