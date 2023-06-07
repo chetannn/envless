@@ -54,6 +54,8 @@ async function getEnvlessFormulaTemplate() {
 async function updateEnvlessFormula(template) {
   console.log("updating remote repository...");
 
+  console.log("token", process.env.GITHUB_TOKEN);
+
   const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
   });
@@ -64,6 +66,7 @@ async function updateEnvlessFormula(template) {
     owner: "chetannn",
     repo: "envless-homebrew",
     path: "Formula/envless.rb",
+    branch: "main",
   });
 
   await octokit.repos.createOrUpdateFileContents({
