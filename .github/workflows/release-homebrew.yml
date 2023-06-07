@@ -3,7 +3,7 @@ name: Release Homebrew
 on:
   workflow_call:
   workflow_dispatch:
-    input:
+    inputs:
       notUsed:
         type: string
         description: Run this workflow from a "release-*" branch. This input does nothing.
@@ -15,6 +15,7 @@ jobs:
     environment: ReleaseHomebrew
     steps:
       - uses: actions/checkout@v3
+      - name: Install AWS CLI
         run: |
           sudo apt-get update
           sudo apt-get install -y awscli
