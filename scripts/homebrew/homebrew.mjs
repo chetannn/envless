@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from "crypto";
 import execa from "execa";
 import fs from "fs";
 import { readFileSync } from "fs";
