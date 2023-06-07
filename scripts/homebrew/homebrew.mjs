@@ -14,6 +14,15 @@ const fileSuffix = ".tar.xz";
 const INTEL_ARCH = "x64";
 const M1_ARCH = "arm64";
 
+const VERSION = require(path.join(
+  __dirname,
+  "..",
+  "..",
+  "apps",
+  "cli",
+  "package.json",
+)).version;
+
 const { GITHUB_SHA_SHORT } = process.env;
 
 const git = async (args, opts = {}) => {
