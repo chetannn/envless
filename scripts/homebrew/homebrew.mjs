@@ -45,23 +45,40 @@ async function getEnvlessFormulaTemplate() {
   const template = fs
     .readFileSync(path.join(__dirname, "envless.rb"))
     .toString("utf-8");
+
   return template;
 }
 
 async function updateEnvlessFormula(template) {
   console.log("updating local git repository...");
 
-  const replacedTemplate = template
-    .replace("__DOWNLOAD_URL__", "https://envless.com")
-    .replace("__SHA256__", "some__sha256__here");
-
-  fs.writeFileSync(formulaPath, replacedTemplate);
+  fs.writeFileSync(formulaPath, template);
 
   await git(["add", "Formula"]);
   // await git(["config", "--local", "core.pager", "cat"]);
   await git(["diff", "--cached"], { stdio: "inherit" });
-  await git(["commit", "-m", `envless v0.0.4`]);
-  await git(["push", "origin", "main"]);
+  await git(["commit", "-m", `envless v${VERSION}`]);
+  await git(["push", "origin", "master"]);
+}
+
+async function calculateSHA256(filePath) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash("sha256");
+    const stream = fs.createReadStream(filePath);
+
+    stream.on("error", (error) => {
+      reject(error);
+    });
+
+    stream.on("data", (data) => {
+      hash.update(data);
+    });
+
+    stream.on("end", () => {
+      const sha256Hash = hash.digest("hex");
+      resolve(sha256Hash);
+    });
+  });
 }
 
 async function downloadTarballFromS3(s3VersionedFilePath, downloadPath) {
@@ -90,26 +107,35 @@ function getVersionedFilePathInS3() {
 }
 
 function getDownloadPath() {
-  const { fileNamePrefix } = getS3Prefixes();
-  const fileParts = [fileNamePrefix, fileSuffix];
-
-  const fileNameM1 = fileParts.join(M1_ARCH);
-
-  const downloadTo = path.join(__dirname, fileNameM1);
+  const fileName = getFileName();
+  const downloadTo = path.join(__dirname, fileName);
 
   return downloadTo;
 }
 
+function getFileName() {
+  const { fileNamePrefix } = getS3Prefixes();
+  const fileParts = [fileNamePrefix, fileSuffix];
+
+  return fileParts.join(M1_ARCH);
+}
+
 async function main() {
-  // const template = await getEnvlessFormulaTemplate();
-  // await cloneHomebrewTapRepo();
+  const template = await getEnvlessFormulaTemplate();
+  await cloneHomebrewTapRepo();
 
   const downloadPath = getDownloadPath();
   const versionedFilePathInS3 = getVersionedFilePathInS3();
+  const fileName = getFileName();
   await downloadTarballFromS3(versionedFilePathInS3, downloadPath);
+  const sha256M1 = await calculateSHA256(path.join(__dirname, fileName));
+  const publicUrl = getS3PublicUrl(versionedFilePathInS3);
 
-  // const publicUrl = getS3PublicUrl(versionedFilePathInS3);
-  // await updateEnvlessFormula(template, publicUrl);
+  const replacedTemplate = template
+    .replace("__DOWNLOAD_URL__", publicUrl)
+    .replace("__SHA256__", sha256M1);
+
+  await updateEnvlessFormula(replacedTemplate);
 }
 
 await main();
