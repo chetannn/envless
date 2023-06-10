@@ -37,7 +37,7 @@ async function updateEnvlessFormula(template) {
     data: { sha },
   } = await octokit.repos.getContent({
     owner: "chetannn",
-    repo: "envless-homebrew",
+    repo: "homebrew-tap",
     path: "Formula/envless.rb",
     branch: "main",
   });
@@ -46,7 +46,7 @@ async function updateEnvlessFormula(template) {
 
   await octokit.repos.createOrUpdateFileContents({
     owner: "chetannn",
-    repo: "envless-homebrew",
+    repo: "homebrew-tap",
     path: "Formula/envless.rb",
     message: "Update formula",
     content: Buffer.from(template).toString("base64"),
