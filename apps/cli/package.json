@@ -19,6 +19,7 @@
   "dependencies": {
     "@47ng/cloak": "^1.1.0",
     "@clack/prompts": "^0.6.3",
+    "@makepro-x/keytar": "^7.10.2",
     "@oclif/core": "^2",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^3.0.1",
