@@ -77,8 +77,12 @@ async function calculateSHA256(filePath) {
   });
 }
 
-async function downloadTarballFromS3(s3VersionedFilePath, downloadPath) {
-  const commandStr = `aws s3 cp s3://testingcli.envless.dev/${s3VersionedFilePath} ${downloadPath}`;
+async function downloadTarballFromS3(
+  stableReleasePathInS3,
+  fileName,
+  downloadPath,
+) {
+  const commandStr = `aws s3 cp s3://${stableReleasePathInS3}/${fileName} ${downloadPath}`;
 
   return execa.command(commandStr);
 }
@@ -90,6 +94,8 @@ function getS3PublicUrl(fileName) {
 async function main() {
   const template = await getEnvlessFormulaTemplate();
 
+  const stableReleasePathInS3 = `testingcli.envless.dev/channels/stable`;
+
   const intelFileName = "envless-darwin-x64.tar.gz";
   const m1FileName = "envless-darwin-arm64.tar.gz";
 
@@ -97,8 +103,8 @@ async function main() {
   const m1FilePath = path.join(__dirname, m1FileName);
 
   await Promise.all(
-    downloadTarballFromS3(versionedFilePathInS3, intelFilePath),
-    downloadTarballFromS3(versionedFilePathInS3, m1FilePath),
+    downloadTarballFromS3(stableReleasePathInS3, intelFileName, intelFilePath),
+    downloadTarballFromS3(stableReleasePathInS3, m1FileName, m1FilePath),
   );
 
   const replacedTemplate = template
