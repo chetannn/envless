@@ -102,10 +102,10 @@ async function main() {
   const intelFilePath = path.join(__dirname, intelFileName);
   const m1FilePath = path.join(__dirname, m1FileName);
 
-  await Promise.all(
+  await Promise.all([
     downloadTarballFromS3(stableReleasePathInS3, intelFileName, intelFilePath),
     downloadTarballFromS3(stableReleasePathInS3, m1FileName, m1FilePath),
-  );
+  ]);
 
   const replacedTemplate = template
     .replace("__M1_DOWNLOAD_URL__", getS3PublicUrl(m1FileName))
