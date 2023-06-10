@@ -110,8 +110,8 @@ async function main() {
   const replacedTemplate = template
     .replace("__M1_DOWNLOAD_URL__", getS3PublicUrl(m1FileName))
     .replace("__INTEL_DOWNLOAD_URL__", getS3PublicUrl(intelFileName))
-    .replace("__M1_SHA256__", calculateSHA256(m1FilePath))
-    .replace("__INTEL_SHA256__", calculateSHA256(intelFilePath));
+    .replace("__M1_SHA256__", await calculateSHA256(m1FilePath))
+    .replace("__INTEL_SHA256__", await calculateSHA256(intelFilePath));
 
   await updateEnvlessFormula(replacedTemplate);
 }
