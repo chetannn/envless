@@ -55,5 +55,4 @@ jobs:
       - name: Upload production artifacts
         run: |
           cd apps/cli
-          pwd
           yarn oclif upload tarballs

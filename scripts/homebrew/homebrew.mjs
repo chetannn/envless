@@ -13,35 +13,10 @@ const packageJson = JSON.parse(
 );
 
 const VERSION = packageJson.version;
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const tmp = path.join(__dirname, "tmp");
-const homebrewDir = path.join(tmp, "envless-homebrew");
-const formulaPath = path.join(homebrewDir, "Formula", "envless.rb");
-const fileSuffix = ".tar.xz";
-const INTEL_ARCH = "x64";
-const M1_ARCH = "arm64";
-
 const { GITHUB_SHA_SHORT } = process.env;
-
-// const git = async (args, opts = {}) => {
-//   await execa("git", ["-C", homebrewDir, ...args], opts);
-// };
-
-async function cloneHomebrewTapRepo() {
-  console.log(
-    `cloning https://github.com/chetannn/homebrew-tap to ${homebrewDir}`,
-  );
-
-  await execa("git", [
-    "clone",
-    "https://github.com/chetannn/envless-homebrew.git",
-    homebrewDir,
-  ]);
-  console.log(`done cloning envless/homebrew-tap to ${homebrewDir}`);
-}
 
 async function getEnvlessFormulaTemplate() {
   const template = fs
@@ -52,11 +27,11 @@ async function getEnvlessFormulaTemplate() {
 }
 
 async function updateEnvlessFormula(template) {
-  console.log("updating remote repository...");
-
   const octokit = new Octokit({
     auth: process.env.TAP_GITHUB_TOKEN,
   });
+
+  console.log("getting repository content...");
 
   const {
     data: { sha },
@@ -66,6 +41,8 @@ async function updateEnvlessFormula(template) {
     path: "Formula/envless.rb",
     branch: "main",
   });
+
+  console.log("updating formula....");
 
   await octokit.repos.createOrUpdateFileContents({
     owner: "chetannn",
@@ -106,57 +83,29 @@ async function downloadTarballFromS3(s3VersionedFilePath, downloadPath) {
   return execa.command(commandStr);
 }
 
-function getS3PublicUrl(versionedFilePath) {
-  return `https://s3.amazonaws.com/testingcli.envless.dev/${versionedFilePath}`;
-}
-
-function getS3Prefixes() {
-  // const fileNamePrefix = `envless-v${VERSION}-${GITHUB_SHA_SHORT}-darwin-`;
-  const fileNamePrefix = `envless-v${VERSION}-ad15691-darwin-`;
-  // const s3KeyPrefix = `versions/${VERSION}/${GITHUB_SHA_SHORT}`;
-  const s3KeyPrefix = `versions/0.0.4/ad15691`;
-
-  return { fileNamePrefix, s3KeyPrefix };
-}
-
-function getVersionedFilePathInS3() {
-  const { fileNamePrefix, s3KeyPrefix } = getS3Prefixes();
-  const fileParts = [fileNamePrefix, fileSuffix];
-
-  const fileNameM1 = fileParts.join(M1_ARCH);
-
-  return `versions/0.0.4/ad15691/${fileNameM1}`;
-  // return `${s3KeyPrefix}/${fileNameM1}`;
-}
-
-function getDownloadPath() {
-  const fileName = getFileName();
-  const downloadTo = path.join(__dirname, fileName);
-
-  return downloadTo;
-}
-
-function getFileName() {
-  const { fileNamePrefix } = getS3Prefixes();
-  const fileParts = [fileNamePrefix, fileSuffix];
-
-  return fileParts.join(M1_ARCH);
+function getS3PublicUrl(fileName) {
+  return `https://s3.amazonaws.com/testingcli.envless.dev/channels/stable/${fileName}`;
 }
 
 async function main() {
   const template = await getEnvlessFormulaTemplate();
-  await cloneHomebrewTapRepo();
 
-  const downloadPath = getDownloadPath();
-  const versionedFilePathInS3 = getVersionedFilePathInS3();
-  const fileName = getFileName();
-  await downloadTarballFromS3(versionedFilePathInS3, downloadPath);
-  const sha256M1 = await calculateSHA256(path.join(__dirname, fileName));
-  const publicUrl = getS3PublicUrl(versionedFilePathInS3);
+  const intelFileName = "envless-darwin-x64.tar.gz";
+  const m1FileName = "envless-darwin-arm64.tar.gz";
+
+  const intelFilePath = path.join(__dirname, intelFileName);
+  const m1FilePath = path.join(__dirname, m1FileName);
+
+  await Promise.all(
+    downloadTarballFromS3(versionedFilePathInS3, intelFilePath),
+    downloadTarballFromS3(versionedFilePathInS3, m1FilePath),
+  );
 
   const replacedTemplate = template
-    .replace("__DOWNLOAD_URL__", publicUrl)
-    .replace("__SHA256__", sha256M1);
+    .replace("__M1_DOWNLOAD_URL__", getS3PublicUrl(m1FileName))
+    .replace("__INTEL_DOWNLOAD_URL__", getS3PublicUrl(intelFileName))
+    .replace("__M1_SHA256__", calculateSHA256(m1FilePath))
+    .replace("__INTEL_SHA256__", calculateSHA256(intelFilePath));
 
   await updateEnvlessFormula(replacedTemplate);
 }
