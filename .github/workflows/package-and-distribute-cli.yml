@@ -3,16 +3,6 @@ name: Package and Distribute CLI
 on:
   workflow_dispatch:
   workflow_call:
-    inputs:
-      version:
-        description: version to promote to latest
-        type: string
-        required: true
-      isStableRelease:
-        type: boolean
-        description: Is this a stable/prod candidate?
-        required: true
-        default: false
 
 jobs:
   pack_tarballs:
