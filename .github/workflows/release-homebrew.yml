@@ -9,8 +9,6 @@ on:
         description: Run this workflow from a "release-*" branch. This input does nothing.
         required: false
 
-permissions: write-all
-
 jobs:
   release-homebrew:
     runs-on: ubuntu-latest
