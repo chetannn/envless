@@ -8,6 +8,10 @@ on:
         description: Is this a stable/prod candidate?
         required: true
         default: false
+      version:
+        description: version to promote to latest
+        type: string
+        required: true
   workflow_call:
     inputs:
       version:
