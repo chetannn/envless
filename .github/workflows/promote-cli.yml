@@ -51,4 +51,4 @@ jobs:
           sudo apt-get install -y awscli jq
       - name: promote
         run: |
-          yarn oclif promote --xz --root="./apps/cli" --indexes --version=${{ inputs.version }} --sha=${{ GITHUB_SHA::7 }} --channel=${{ fromJSON(inputs.isStableRelease) && 'stable' || 'beta' }}
+          yarn oclif promote --xz --root="./apps/cli" --indexes --version=${{ inputs.version }} --sha=${{ github.sha }} --channel=${{ fromJSON(inputs.isStableRelease) && 'stable' || 'beta' }}
