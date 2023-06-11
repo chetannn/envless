@@ -12,12 +12,6 @@ on:
         description: version to promote to latest
         type: string
         required: true
-  workflow_call:
-      isStableRelease:
-        type: boolean
-        description: Is this a stable/prod candidate?
-        required: true
-        default: false
 
 jobs:
   package-and-upload:
