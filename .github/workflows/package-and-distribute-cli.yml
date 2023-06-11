@@ -8,7 +8,7 @@ on:
         description: version to promote to latest
         type: string
         required: true
-      isStableCandidate:
+      isStableRelease:
         type: boolean
         description: Is this a stable/prod candidate?
         required: true
