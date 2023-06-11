@@ -5,14 +5,14 @@ on:
     inputs:
       isStableRelease:
         type: boolean
-        description: Is this a stable/prod candidate?
+        description: Is this a stable/prod release ?
         required: true
         default: false
       version:
         description: version to promote to latest
         type: string
         required: true
-        
+
   workflow_call:
 
 jobs:
@@ -22,9 +22,12 @@ jobs:
 
   promote:
     needs: [package-and-upload]
-    if: needs.pack-upload.result == 'success'
+    if: needs.package-and-upload.result == 'success'
     uses: ./.github/workflows/promote-cli.yml
     secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      isStableRelease: ${{ inputs.isStableRelease }}
 
   release-homebrew:
     needs: [promote]
