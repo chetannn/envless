@@ -12,6 +12,8 @@ on:
         description: version to promote to latest
         type: string
         required: true
+        
+  workflow_call:
 
 jobs:
   package-and-upload:
