@@ -1,0 +1,35 @@
+name: Create CLI Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      isStableCandidate:
+        type: boolean
+        description: Is this a stable/prod candidate?
+        required: true
+        default: false
+  workflow_call:
+    inputs:
+      isStableCandidate:
+        type: boolean
+        description: Is this a stable/prod candidate?
+        required: true
+        default: false
+
+jobs:
+  package-and-upload:
+    uses: ./.github/workflows/package-and-distribute-cli.yml
+    secrets: inherit
+
+  promote:
+    needs: [package-and-upload]
+    if: needs.pack-upload.result == 'success'
+    uses: ./.github/workflows/promote-cli.yml
+    secrets: inherit
+
+  release-homebrew:
+    needs: [promote]
+    if: needs.promote.result == 'success'
+    uses: ./.github/workflows/release-homebrew.yml
+    secrets: inherit
+
