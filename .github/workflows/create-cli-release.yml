@@ -10,6 +10,10 @@ on:
         default: false
   workflow_call:
     inputs:
+      version:
+        description: version to promote to latest
+        type: string
+        required: true
       isStableCandidate:
         type: boolean
         description: Is this a stable/prod candidate?
