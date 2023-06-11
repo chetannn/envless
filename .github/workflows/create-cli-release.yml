@@ -13,11 +13,6 @@ on:
         type: string
         required: true
   workflow_call:
-    inputs:
-      version:
-        description: version to promote to latest
-        type: string
-        required: true
       isStableRelease:
         type: boolean
         description: Is this a stable/prod candidate?
