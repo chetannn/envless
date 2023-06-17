@@ -76,8 +76,14 @@ jobs:
           cp yarn.lock apps/cli
           cd apps/cli
           yarn --frozen-lockfile --prefer-offline --network-timeout 1000000
-      - name: Upload production artifacts
+      - name: Upload tarballs
         run: |
           cd apps/cli
           yarn oclif upload tarballs
+      - name: Upload deb
+        with:
+          name: packed-deb
+          path: /home/runner/work/envless/envless/apps/cli/dist
+        run: |
+          cd apps/cli
           yarn oclif upload deb
