@@ -5,6 +5,29 @@ on:
   workflow_call:
 
 jobs:
+  pack_deb:
+    runs-on: ubuntu-20.04
+    env:
+      ENVLESS_AUTHOR: 'envless'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nsis p7zip-full
+      - run: sudo mkdir -p /build
+      - name: Install package deps
+        run: |
+          cp yarn.lock apps/cli
+          cd apps/cli
+          yarn --frozen-lockfile --network-timeout 1000000
+      - name: Building deb
+        run: yarn oclif pack:deb --root="./apps/cli"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: packed-deb
+          path: /home/runner/work/envless/envless/apps/cli/dist
+
   pack_tarballs:
     runs-on: ubuntu-latest
     steps:
