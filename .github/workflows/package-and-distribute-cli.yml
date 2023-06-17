@@ -85,6 +85,8 @@ jobs:
         with:
           name: packed-deb
           path: /home/runner/work/envless/envless/apps/cli/dist
-        run: |
+      - run: |
           cd apps/cli
           yarn oclif upload deb
+      
+        
