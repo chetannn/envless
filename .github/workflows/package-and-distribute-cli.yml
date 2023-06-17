@@ -81,12 +81,13 @@ jobs:
           cd apps/cli
           yarn oclif upload tarballs
       - name: Upload deb
+        run: |
+          cd apps/cli
+          yarn oclif upload deb
+      - uses: actions/download-artifact@v3
         with:
           name: packed-deb
           path: /home/runner/work/envless/envless/apps/cli/dist
-      - run: |
-          cd apps/cli
-          yarn oclif upload deb
 
      
       
