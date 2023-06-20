@@ -88,4 +88,4 @@ jobs:
         run: |
           cd apps/cli
           yarn oclif upload deb
-          aws s3 cp --content-type text/plain --cache-control "max-age: 604800" /home/runner/work/envless/envless/apps/cli/dist/apt/release.key "s3://testingcli.envless.dev/channels/stable/apt/release.key
+          aws s3 cp --content-type text/plain --cache-control "max-age: 604800" /home/runner/work/envless/envless/apps/cli/dist/apt/release.key "s3://testingcli.envless.dev/channels/stable/apt/release.key"
